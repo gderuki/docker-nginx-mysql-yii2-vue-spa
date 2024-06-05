@@ -23,7 +23,8 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
-        'app.js'
+        'dist/js/app.js',
+        'dist/js/chunk-vendors.js'
     ];
     public $depends = [
         'yii\web\YiiAsset',
