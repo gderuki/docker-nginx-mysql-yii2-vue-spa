@@ -1,0 +1,16 @@
+.env
+.bash_history
+
+*.log
+
+.cache/
+.config/
+.local/
+
+mysql-data/*
+
+runtime/
+
+*.session.sql
+
+.vscode/
