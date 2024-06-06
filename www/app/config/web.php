@@ -50,7 +50,7 @@ $config = [
             'showScriptName' => false,
             'enableStrictParsing' => true,
             'rules' => [
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'book'],
+                ['class' => 'yii\rest\UrlRule', 'controller' => 'task'],
                 '<url:(.*)>' => 'site/index',
             ],
         ],
