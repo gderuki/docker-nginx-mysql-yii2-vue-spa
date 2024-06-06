@@ -2,7 +2,7 @@
 
 namespace app\controllers;
 
-use app\models\Book;
+use app\models\Task;
 use yii\data\ActiveDataProvider;
 use yii\rest\ActiveController;
 use yii\web\ServerErrorHttpException;
@@ -10,11 +10,11 @@ use yii\web\BadRequestHttpException;
 use \yii\web\NotFoundHttpException;
 
 /**
- * A CRUD actions and simple RESTful API for the Book model.
+ * A CRUD actions and simple RESTful API for the Task model.
  */
-class BookController extends ActiveController
+class TaskController extends ActiveController
 {
-    public $modelClass = 'app\models\Book';
+    public $modelClass = 'app\models\Task';
 
     /**
      * Returns an array of actions that this controller should handle.
@@ -37,7 +37,7 @@ class BookController extends ActiveController
             'modelClass' => $this->modelClass,
             'prepareDataProvider' => fn() => new ActiveDataProvider(
                 [
-                    'query' => $this->modelClass::find(),
+                    'query'=> $this->modelClass::find()->orderBy(['id' => SORT_DESC]),
                     'pagination' => false,
                 ]
             ),
@@ -47,9 +47,9 @@ class BookController extends ActiveController
     }
 
     /**
-     * Creates a new Book model based on the received POST data.
+     * Creates a new Task model based on the received POST data.
      *
-     * @return Book the newly created model
+     * @return Task the newly created model
      * @throws ServerErrorHttpException if the model cannot be saved
      */
     public function actionCreate()
@@ -69,16 +69,16 @@ class BookController extends ActiveController
     }
 
     /**
-     * Updates the Book model based on its primary key value and the received POST data.
+     * Updates the Task model based on its primary key value and the received POST data.
      *
      * @param integer $id
-     * @return Book the updated model or the model without changes if the update is unsuccessful
+     * @return Task the updated model or the model without changes if the update is unsuccessful
      */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
+        if ($model->load(\Yii::$app->request->post(), '') && $model->save()) {
             return $model;
         }
 
@@ -86,7 +86,7 @@ class BookController extends ActiveController
     }
 
     /**
-     * Deletes the Book model based on its primary key value.
+     * Deletes the Task model based on its primary key value.
      *
      * @param integer $id
      * @return array with a status key indicating success
@@ -104,15 +104,15 @@ class BookController extends ActiveController
     }
 
     /**
-     * Finds the Book model based on its primary key value.
+     * Finds the Task model based on its primary key value.
      *
      * @param integer $id
-     * @return Book the loaded model
+     * @return Task the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Book::findOne($id)) !== null) {
+        if (($model = Task::findOne($id)) !== null) {
             return $model;
         }
 
