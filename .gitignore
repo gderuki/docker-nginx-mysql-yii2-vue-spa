@@ -16,3 +16,5 @@ runtime/
 .vscode/
 .npm/
 dist/
+
+www/app/assets/
