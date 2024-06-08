@@ -29,21 +29,29 @@ class TaskController extends ActiveController
         unset(
             $actions['create'],
             $actions['update'],
-            $actions['delete']
+            $actions['delete'],
+            $actions['index']  // Unset the default 'index' action
         );
 
-        $actions['index'] = [
-            'class' => 'yii\rest\IndexAction',
-            'modelClass' => $this->modelClass,
-            'prepareDataProvider' => fn() => new ActiveDataProvider(
-                [
-                    'query'=> $this->modelClass::find()->orderBy(['id' => SORT_DESC]),
-                    'pagination' => false,
-                ]
-            ),
-        ];
-
         return $actions;
+    }
+
+    public function actionIndex()
+    {
+        $cache = \Yii::$app->cache;
+
+        // Try to get the data from cache
+        $tasks = $cache->get('tasks');
+
+        if ($tasks === false) {
+            // The data is not in the cache, so retrieve it from the database
+            $tasks = $this->modelClass::find()->orderBy(['id' => SORT_DESC])->all();
+
+            // Store the data in the cache for next time
+            $cache->set('tasks', $tasks, 3600); // Cache for 1 hour
+        }
+
+        return $tasks;
     }
 
     /**
@@ -55,7 +63,6 @@ class TaskController extends ActiveController
     public function actionCreate()
     {
         $model = new $this->modelClass;
-
         $req = \Yii::$app->getRequest()->getBodyParams();
         $model->load($req, '');
 
@@ -79,6 +86,9 @@ class TaskController extends ActiveController
         $model = $this->findModel($id);
 
         if ($model->load(\Yii::$app->request->post(), '') && $model->save()) {
+            // Invalidate the cache
+            \Yii::$app->cache->delete('tasks');
+
             return $model;
         }
 
@@ -97,6 +107,9 @@ class TaskController extends ActiveController
         $model = $this->findModel($id);
 
         if ($model->delete()) {
+            // Invalidate the cache
+            \Yii::$app->cache->delete('tasks');
+
             return ['status' => 'success'];
         }
 
@@ -112,10 +125,19 @@ class TaskController extends ActiveController
      */
     protected function findModel($id)
     {
-        if (($model = Task::findOne($id)) !== null) {
-            return $model;
+        $cache = \Yii::$app->cache;
+        $model = $cache->get('task_' . $id);
+
+        if ($model === false) {
+            $model = Task::findOne($id);
+
+            if ($model !== null) {
+                $cache->set('task_' . $id, $model, 3600); // 1h
+            } else {
+                throw new NotFoundHttpException('The requested page does not exist.');
+            }
         }
 
-        throw new NotFoundHttpException('The requested page does not exist.');
+        return $model;
     }
 }

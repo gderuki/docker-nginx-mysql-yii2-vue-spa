@@ -20,7 +20,7 @@ $config = [
             'cookieValidationKey' => 'Bz5jl0RxLHrhXSIcc76Ii4M8Pn5VNZx8',
         ],
         'cache' => [
-            'class' => 'yii\caching\FileCache',
+            'class' => 'yii\redis\Cache',
         ],
         'user' => [
             'identityClass' => 'app\models\User',
@@ -53,6 +53,12 @@ $config = [
                 ['class' => 'yii\rest\UrlRule', 'controller' => 'task'],
                 '<url:(.*)>' => 'site/index',
             ],
+        ],
+        'redis' => [
+            'class' => 'yii\redis\Connection',
+            'hostname' => 'yii-redis',
+            'port' => 6379,
+            'database' => 0,
         ],
     ],
     'params' => $params,

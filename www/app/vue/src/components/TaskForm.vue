@@ -39,7 +39,7 @@ interface Rule {
     message: string;
     trigger: string;
     // eslint-disable-next-line no-unused-vars
-    // validator?: (_: any, value: any, callback: any) => void;
+    validator?: (_: any, value: any) => Promise<void>;
 }
 
 interface Rules {
@@ -87,7 +87,14 @@ export default {
                 {
                     required: true,
                     message: 'Please provide task status',
-                    trigger: getTrigger('status')
+                    trigger: getTrigger('status'),
+                    validator: (_, value) => {
+                        if (value === '' || value === null) {
+                            return Promise.reject(new Error('Please provide task status'));
+                        } else {
+                            return Promise.resolve();
+                        }
+                    },
                 },
             ],
         }));
